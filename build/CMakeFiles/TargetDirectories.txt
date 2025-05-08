@@ -1,0 +1,2 @@
+/Users/pattarakultawee.k.aa/Desktop/CLRS/CP/build/CMakeFiles/edit_cache.dir
+/Users/pattarakultawee.k.aa/Desktop/CLRS/CP/build/CMakeFiles/rebuild_cache.dir

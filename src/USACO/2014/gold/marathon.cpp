@@ -1,14 +1,26 @@
 # include <iostream>
 # include <utility>
 # include <vector>
+# include <fstream>
 
 using namespace std;
 
-template<typename T, auto op, auto e>
+ofstream fout("marathon.out");
+ifstream fin("marathon.in");
+
+template<typename T, typename Op, typename E>
 struct St {
     int n;
     vector<T> t;
+    Op op;
+    E e;
+
     St(const vector<T>& a) : n(a.size()) {
+        t = vector<T>(n << 1, e());
+        build(a);
+    }
+
+    St(const vector<T>& a, Op op, E e) : n(a.size()), op(op), e(e) {
         t = vector<T>(n << 1, e());
         build(a);
     }
@@ -58,50 +70,71 @@ int dist2box(const pair<int, int>&a, const pair<int, int>&b, const pair<int, int
     return dx + dy;
 }
 
-int main() {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
+int add(int a, int b) {
+    return a + b;
+}
+
+int maximum(int a, int b) {
+    return max(a, b);
+}
+
+int ident() {
+    return 0;
+}
+
+
+
+int main() {    
     int n, q;
-    cin >> n >> q;
+    fin >> n >> q;
     vector<pair<int, int>> p(n);
     vector<int> d(n), d2(n);
     for (int i = 0; i < n; ++i) {
         int x, y;
-        cin >> x >> y;
+        fin >> x >> y;
         p[i] = {x, y};
         if (i) {
             d[i] = dist(p[i], p[i - 1]);
             if (i > 1) {
-                d2[i] = dist2box(p[i - 2], p[i], p[i - 1]);
+                d2[i - 1] = dist2box(p[i - 2], p[i], p[i - 1]);
             }
         }
     }
-    St <int, [](int a, int b) { return a + b; }, []() { return 0; }> st1(d);
-    St <int, [](int a, int b) { return max(a, b); }, []() { return 0; }> st2(d2);
+    St <int, decltype(&add), decltype(&ident)> st1(d, &add, &ident);
+    St <int, decltype(&maximum), decltype(&ident)> st2(d2, &maximum, &ident);
     
 
     while (q--) {
         char type;
-        cin >> type;
+        fin >> type;
         if (type == 'Q') {
             int l, r;
-            cin >> l >> r;
-            
-            int res = st1.query(l, r) - 2 * st2.query(l + 1, r);
-            cout << res << '\n';
-            
-
+            fin >> l >> r;
+            int res = st1.query(l, r) - 2 * st2.query(l, r - 1);
+            fout << res << '\n';
         } else {
             int i, x, y;
-            cin >> i >> x >> y;
+            fin >> i >> x >> y;
             --i;
             p[i] = {x, y};
-            if (i) {
+            if (i > 0) {
                 d[i] = dist(p[i], p[i - 1]);
                 st1.update(i, d[i]);
-                if (i > 1) {
-                    d2[i] = dist2box(p[i - 2], p[i], p[i - 1]);
+                if (i < n - 1) {
+                    d2[i] = dist2box(p[i - 1], p[i + 1], p[i]);
                     st2.update(i, d2[i]);
+                }
+                if (i > 1) {
+                    d2[i - 1] = dist2box(p[i - 2], p[i], p[i - 1]);
+                    st2.update(i - 1, d2[i - 1]);
+                }
+            }
+            if (i < n - 1) {
+                d[i + 1] = dist(p[i + 1], p[i]);
+                st1.update(i + 1, d[i + 1]);
+                if (i < n - 2) {
+                    d2[i + 1] = dist2box(p[i], p[i + 2], p[i + 1]);
+                    st2.update(i + 1, d2[i + 1]);
                 }
             }
             

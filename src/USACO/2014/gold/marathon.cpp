@@ -117,27 +117,13 @@ int main() {
             fin >> i >> x >> y;
             --i;
             p[i] = {x, y};
-            if (i > 0) {
-                d[i] = dist(p[i], p[i - 1]);
-                st1.update(i, d[i]);
-                if (i < n - 1) {
-                    d2[i] = dist2box(p[i - 1], p[i + 1], p[i]);
-                    st2.update(i, d2[i]);
-                }
-                if (i > 1) {
-                    d2[i - 1] = dist2box(p[i - 2], p[i], p[i - 1]);
-                    st2.update(i - 1, d2[i - 1]);
+            for (int j = -1; j <= 1; ++j) {
+                if (i + j < 0 || i + j >= n) continue;
+                st1.update(i + j, dist(p[i + j], p[i + j - 1]));
+                if (i + j > 0 && i + j < n - 1) {
+                    st2.update(i + j, dist2box(p[i + j - 1], p[i + j + 1], p[i + j]));
                 }
             }
-            if (i < n - 1) {
-                d[i + 1] = dist(p[i + 1], p[i]);
-                st1.update(i + 1, d[i + 1]);
-                if (i < n - 2) {
-                    d2[i + 1] = dist2box(p[i], p[i + 2], p[i + 1]);
-                    st2.update(i + 1, d2[i + 1]);
-                }
-            }
-            
         }
     }
 }

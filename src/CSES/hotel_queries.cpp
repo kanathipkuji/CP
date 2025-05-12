@@ -19,34 +19,55 @@ struct MaxElement {
 };
 
 struct St {
-    int n, n2;
+    int n;
     vector<MaxElement> t;
 
     St(vector<int>& a) : n(a.size()) {
-        n2 = 1;
-        while (n2 < n) n2 <<= 1;
-        t.resize(n2 << 1);
+        t.resize(n << 1);
         for (int i = 0; i < n; ++i) {
-            t[n2 + i] = MaxElement(a[i]);
+            t[n + i] = MaxElement(a[i]);
         }
-        for (int i = n2 - 1; i > 0; --i) {
+        for (int i = n - 1; i > 0; --i) {
             t[i] = t[i << 1] + t[i << 1 | 1];
         }
     }
 
-    int queryUpdate(int x) {
-        int j = 1;
-        while (j < n2) {
-            if (t[j << 1].x >= x) {
-                j <<= 1;
-            } else if (t[j << 1 | 1].x >= x) {
-                j = (j << 1) | 1;
-            } else {
-                return 0;
+    int walk(int l, int r, int x) {
+        if (l >= r) return -1;
+        int resl, resr;
+        resl = resr = -1;
+        for (l += n,r += n; l < r ; l >>= 1, r >>= 1) {
+            if (l & 1) {
+                if (t[l].x >= x) {
+                    resl = l;
+                    break;
+                }
+                ++l;
+            }
+            if (r & 1) {
+                --r;
+                if (t[r].x >= x) {
+                    resr = r;
+                }
             }
         }
-        if (t[j].x < x) return 0;
-        int res = j - n2 + 1;
+        if (resl == -1 && resr == -1) return -1;
+        int i = resl == -1 ? resr : resl;
+        while (i < n) {
+            if (t[i << 1].x >= x) {
+                i = i << 1;
+            } else {
+                i = i << 1 | 1;
+            }
+        }
+        return i - n;
+    }
+
+    int queryUpdate(int x) {
+        int j = walk(0, n, x);
+        if (j == -1) return 0;
+        int res = j + 1;
+        j += n;
         for (t[j].x -= x; j > 1; j >>= 1) {
             t[j >> 1] = t[j] + t[j^1];
         }

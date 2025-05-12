@@ -30,7 +30,6 @@ struct St {
         if (l >= r) return -1;
         int resl, resr;
         resl = resr = -1;
-        int rr = r;
         for (l += n,r += n; l < r ; l >>= 1, r >>= 1) {
             if (l & 1) {
                 if (st[l] % x != 0) {

@@ -10,12 +10,12 @@
           "-Wall",
           "-Wextra",
           "-Wshadow",
-          "-ggdb3",                        
+          "-g",                        
           "-D_GLIBCXX_ASSERTIONS",
           "-DDEBUG",
           "-ferror-limit=2",
           "-o",
-          "${fileDirname}/${fileBasenameNoExtension}_debug",
+          "${workspaceFolder}/bin/${fileBasenameNoExtension}_debug",
           "${file}"
         ],
         "group": {
@@ -36,7 +36,7 @@
           "-O2",                      
           "-DNDEBUG",                 
           "-o",
-          "${fileDirname}/${fileBasenameNoExtension}_release",
+          "${workspaceFolder}/bin/${fileBasenameNoExtension}_release",
           "${file}"
         ],
         "group": {
@@ -48,7 +48,7 @@
       {
         "label": "run:debug",
         "type": "shell",
-        "command": "${fileDirname}/${fileBasenameNoExtension}_debug",
+        "command": "${workspaceFolder}/bin/${fileBasenameNoExtension}_debug",
         "dependsOn": "build:debug",
         "group": "test",
         "problemMatcher": []
@@ -56,11 +56,26 @@
       {
         "label": "run:release",
         "type": "shell",
-        "command": "${fileDirname}/${fileBasenameNoExtension}_release",
+        "command": "${workspaceFolder}/bin/${fileBasenameNoExtension}_release",
         "dependsOn": "build:release",
         "group": "test",
         "problemMatcher": []
+      },
+      {
+        "label": "run:release piped I/O",
+        "type": "shell",
+        "command": "${workspaceFolder}/bin/${fileBasenameNoExtension}_release < ${fileDirname}/${fileBasenameNoExtension}.in > ${fileDirname}/${fileBasenameNoExtension}.out",
+        "dependsOn": "build:release",
+        "group": "test",
+        "options": {
+          "shell": {
+            "executable": "/bin/zsh",
+            "args": ["-c"]
+          }
+        },
+        "problemMatcher": []
       }
+      
     ]
   }
   

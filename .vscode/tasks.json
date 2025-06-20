@@ -1,23 +1,66 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "compile current file",
-            "type": "shell",
-            "command": "clang++",
-            "args": [
-                "-std=c++20",
-                "-Wall",
-                "-Wextra",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
-                "${file}"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": ["$gcc"]
-        }
+      {
+        "label": "build:debug",
+        "type": "shell",
+        "command": "clang++",
+        "args": [
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wshadow",
+          "-ggdb3",                        
+          "-D_GLIBCXX_ASSERTIONS",
+          "-DDEBUG",
+          "-ferror-limit=2",
+          "-o",
+          "${fileDirname}/${fileBasenameNoExtension}_debug",
+          "${file}"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": false
+        },
+        "problemMatcher": ["$gcc"]
+      },
+      {
+        "label": "build:release",
+        "type": "shell",
+        "command": "clang++",
+        "args": [
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wshadow",
+          "-O2",                      
+          "-DNDEBUG",                 
+          "-o",
+          "${fileDirname}/${fileBasenameNoExtension}_release",
+          "${file}"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": ["$gcc"]
+      },
+      {
+        "label": "run:debug",
+        "type": "shell",
+        "command": "${fileDirname}/${fileBasenameNoExtension}_debug",
+        "dependsOn": "build:debug",
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "run:release",
+        "type": "shell",
+        "command": "${fileDirname}/${fileBasenameNoExtension}_release",
+        "dependsOn": "build:release",
+        "group": "test",
+        "problemMatcher": []
+      }
     ]
-}
+  }
+  
